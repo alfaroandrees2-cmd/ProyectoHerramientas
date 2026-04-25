@@ -6,6 +6,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
+/**
+ * Respuesta estandar de autenticación con token y datos básicos del usuario.
+ */
 public class AuthResponse {
     private String token;
     private String tokenType;

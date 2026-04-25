@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Adaptador entre repositorio de usuarios y contrato UserDetailsService de Spring Security.
+ */
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;

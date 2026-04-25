@@ -16,6 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * Filtro que extrae y valida JWT en cada request protegida para poblar el SecurityContext.
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -39,6 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             username = jwtService.extractUsername(jwt);
         } catch (Exception ex) {
+            // Si el token viene malformado o expirado, se deja continuar para que Security responda 401.
             filterChain.doFilter(request, response);
             return;
         }

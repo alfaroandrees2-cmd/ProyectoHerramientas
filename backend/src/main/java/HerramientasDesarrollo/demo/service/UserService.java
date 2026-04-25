@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Capa de aplicación para administración de usuarios y proyección de perfil.
+ */
 public class UserService {
 
     private final UsuarioRepository usuarioRepository;
@@ -26,6 +29,7 @@ public class UserService {
     }
 
     public UserResponse createByAdmin(CreateUserRequest request) {
+        // El alta administrativa valida unicidad antes de persistir para devolver error de negocio claro.
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("El email ya está registrado");
         }

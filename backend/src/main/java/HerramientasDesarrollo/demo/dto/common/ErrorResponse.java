@@ -6,6 +6,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
+/**
+ * Estructura uniforme de errores devueltos por la API.
+ */
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private int status;

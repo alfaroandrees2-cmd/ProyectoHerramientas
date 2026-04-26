@@ -15,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
+/**
+ * Encapsula creación y validación de JWT, incluyendo claims de negocio requeridos por la API.
+ */
 public class JwtService {
 
     @Value("${jwt.secret}")
@@ -30,6 +33,7 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         if (userDetails instanceof UserPrincipal userPrincipal) {
+            // Claims usados por clientes para personalizar experiencia sin llamadas extra.
             extraClaims.put("role", userPrincipal.getUsuario().getRol().name());
             extraClaims.put("nombre", userPrincipal.getUsuario().getNombre());
             extraClaims.put("userId", userPrincipal.getUsuario().getId());

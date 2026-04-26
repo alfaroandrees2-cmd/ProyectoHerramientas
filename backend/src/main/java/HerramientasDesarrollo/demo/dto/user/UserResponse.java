@@ -7,6 +7,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
+/**
+ * Vista pública de usuario sin exponer credenciales.
+ */
 public class UserResponse {
     private Long id;
     private String nombre;

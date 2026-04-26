@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Orquesta registro e inicio de sesión, incluyendo reglas de negocio de roles.
+ */
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
@@ -30,6 +33,7 @@ public class AuthService {
     private final UserService userService;
 
     public AuthResponse register(RegisterRequest request, Authentication authentication) {
+        // Primera barrera de integridad para evitar colisión de credenciales.
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("El email ya está registrado");
         }
@@ -37,6 +41,7 @@ public class AuthService {
         Role requestedRole = request.getRol() != null ? request.getRol() : Role.PACIENTE;
         boolean adminCreatingPrivilegedUser = requestedRole == Role.ADMIN || requestedRole == Role.MEDICO;
 
+        // Solo un ADMIN autenticado puede provisionar cuentas de administración o médicas.
         if (adminCreatingPrivilegedUser && !isAuthenticatedAdmin(authentication)) {
             throw new UnauthorizedRoleAssignmentException(
                     "Solo ADMIN puede registrar usuarios con rol ADMIN o MEDICO"
@@ -65,6 +70,7 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
         Authentication authentication;
         try {
+            // Delega validación de credenciales al AuthenticationManager configurado en Security.
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );

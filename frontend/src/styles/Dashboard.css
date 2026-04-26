@@ -1,193 +1,217 @@
-/* Dashboard Styles */
-.dashboard {
+.dashboard-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  padding: 24px;
+  background: linear-gradient(160deg, #edf2f7 0%, #dde6f5 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937;
 }
 
-.dashboard-header {
+.topbar {
+  max-width: 1240px;
+  margin: 0 auto 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
+  padding: 18px 22px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 30px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  background: linear-gradient(135deg, #6366f1, #9333ea);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
 }
 
-.dashboard-header h1 {
+.brand h1 {
   margin: 0;
-  color: #2d3748;
-  font-size: 32px;
+  font-size: 28px;
+  line-height: 1;
 }
 
-.btn-logout {
-  padding: 12px 24px;
-  background: #e74c3c;
-  color: white;
+.brand p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #ef4444, #ec4899);
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-weight: 700;
 }
 
-.btn-logout:hover {
-  background: #c0392b;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
-}
-
-.dashboard-content {
-  max-width: 1200px;
+.stats-grid,
+.filters-box,
+.doctores-grid,
+.notice-box {
+  max-width: 1240px;
   margin: 0 auto;
 }
 
-/* User Info Section */
-.user-info {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
 }
 
-.user-info h2 {
-  margin-top: 0;
-  color: #2d3748;
-  border-bottom: 3px solid #667eea;
-  padding-bottom: 15px;
-}
-
-.info-card {
-  background: #f8f9fa;
+.stat-card {
+  background: #ffffff;
+  border-radius: 16px;
   padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
+  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
 }
 
-.info-card p {
-  margin: 12px 0;
-  color: #495057;
+.stat-label {
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.filters-box {
+  margin-bottom: 18px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 14px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-weight: 700;
+  color: #374151;
+}
+
+.filter-group input,
+.filter-group select {
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px;
   font-size: 15px;
 }
 
-.info-card strong {
-  color: #2d3748;
+.doctores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
 }
 
-.rol {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
+.doctor-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
 }
 
-.rol.user {
-  background: #d4edda;
-  color: #155724;
+.doctor-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.rol.admin {
-  background: #fff3cd;
-  color: #856404;
+.doctor-card h2 {
+  margin: 0;
+  font-size: 29px;
 }
 
-/* Admin Section */
-.admin-section {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+.especialidad {
+  color: #4f46e5;
+  font-weight: 700;
+  margin-top: 8px;
 }
 
-.admin-section h2 {
-  margin-top: 0;
-  color: #2d3748;
-  border-bottom: 3px solid #f39c12;
-  padding-bottom: 15px;
+.rating {
+  background: #f59e0b;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-weight: 700;
+  height: fit-content;
 }
 
-.error-message {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  border: 1px solid #f5c6cb;
+.doctor-meta {
+  margin: 14px 0 16px;
+  padding-left: 18px;
+  color: #4b5563;
+  display: grid;
+  gap: 6px;
 }
 
-/* Tabla de usuarios */
-.users-table {
-  overflow-x: auto;
-  margin-top: 20px;
+.estado {
+  margin: 0;
+  font-weight: 700;
 }
 
-.users-table table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
+.estado.ok {
+  color: #16a34a;
 }
 
-.users-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.estado.off {
+  color: #dc2626;
 }
 
-.users-table th {
-  padding: 15px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 14px;
+.panel-state {
+  grid-column: 1 / -1;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px;
+  color: #374151;
 }
 
-.users-table td {
-  padding: 15px;
-  border-bottom: 1px solid #e9ecef;
-  color: #495057;
-  font-size: 14px;
+.panel-error {
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
-.users-table tbody tr {
-  transition: background 0.3s ease;
+.notice-box {
+  margin-top: 18px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
+  color: #4b5563;
 }
 
-.users-table tbody tr:hover {
-  background: #f8f9fa;
-}
-
-.users-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .dashboard-header {
+@media (max-width: 900px) {
+  .topbar {
     flex-direction: column;
-    text-align: center;
-    gap: 20px;
+    gap: 12px;
+    align-items: flex-start;
   }
 
-  .dashboard-header h1 {
-    font-size: 24px;
-  }
-
-  .user-info,
-  .admin-section {
-    padding: 20px;
-  }
-
-  .users-table {
-    font-size: 12px;
-  }
-
-  .users-table th,
-  .users-table td {
-    padding: 10px;
+  .stats-grid,
+  .doctores-grid,
+  .filters-box {
+    grid-template-columns: 1fr;
   }
 }

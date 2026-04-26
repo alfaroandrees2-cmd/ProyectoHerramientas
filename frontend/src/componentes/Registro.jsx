@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/Registro.css';
 
-const Registro = () => {
+const Registro = (props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -108,10 +108,10 @@ const Registro = () => {
         rol: 'PACIENTE'
       });
 
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 2000);
+      // Notificar al padre y cambiar vista
+      if (props.onAuthSuccess) {
+        props.onAuthSuccess();
+      }
 
     } catch (err) {
       setError(err.message || 'Error al registrarse. Intente nuevamente.');

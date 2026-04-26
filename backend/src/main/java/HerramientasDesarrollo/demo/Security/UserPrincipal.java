@@ -9,6 +9,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
+/**
+ * Proyección de Usuario al modelo de seguridad de Spring (credenciales y authorities).
+ */
 public class UserPrincipal implements UserDetails {
 
     private final Usuario usuario;

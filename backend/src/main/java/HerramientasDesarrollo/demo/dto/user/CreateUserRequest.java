@@ -10,6 +10,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/**
+ * Datos para alta administrativa de usuarios con rol explícito.
+ */
 public class CreateUserRequest {
 
     @NotBlank(message = "El nombre es obligatorio")

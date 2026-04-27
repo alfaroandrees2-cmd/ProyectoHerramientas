@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import '../styles/Registro.css';
+import logoSkipline from '../assets/images/logo.png';
 
-const Login = () => {
+const Login = (props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -83,10 +84,10 @@ const Login = () => {
         password: ''
       });
 
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 2000);
+      // Notificar al padre y cambiar vista
+      if (props.onAuthSuccess) {
+        props.onAuthSuccess();
+      }
 
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión. Intente nuevamente.');
@@ -97,49 +98,73 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <form onSubmit={handleLoginSubmit} className="auth-form">
-          <h2>Iniciar Sesión</h2>
+      <div className="auth-card auth-split-card">
+        <aside className="auth-visual-panel">
+          <div className="visual-glow visual-glow-top" aria-hidden="true" />
+          <div className="visual-glow visual-glow-bottom" aria-hidden="true" />
+          <h1>Bienvenido de nuevo</h1>
+          <p>
+            Gestiona citas y horarios en una sola plataforma con una experiencia
+            rapida y clara.
+          </p>
+        </aside>
 
-          {error && <div className="alert alert-error">{error}</div>}
-          {success && <div className="alert alert-success">{success}</div>}
+        <section className="auth-form-panel">
+          <form onSubmit={handleLoginSubmit} className="auth-form">
+            <img src={logoSkipline} alt="Skipline Logo" className="form-logo" />
+            <h2>Iniciar sesión</h2>
 
-          <div className="form-group">
-            <label htmlFor="login-email">Email</label>
-            <input
-              type="email"
-              id="login-email"
-              name="email"
-              value={loginForm.email}
-              onChange={handleLoginChange}
-              placeholder="correo@ejemplo.com"
+            {error && <div className="alert alert-error">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
+
+            <div className="form-group">
+              <label htmlFor="login-email">Email</label>
+              <input
+                type="email"
+                id="login-email"
+                name="email"
+                value={loginForm.email}
+                onChange={handleLoginChange}
+                placeholder=""
+                disabled={loading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="login-password">Contraseña</label>
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                value={loginForm.password}
+                onChange={handleLoginChange}
+                placeholder=""
+                disabled={loading}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary btn-block"
               disabled={loading}
-              required
-            />
-          </div>
+            >
+              {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            </button>
 
-          <div className="form-group">
-            <label htmlFor="login-password">Contraseña</label>
-            <input
-              type="password"
-              id="login-password"
-              name="password"
-              value={loginForm.password}
-              onChange={handleLoginChange}
-              placeholder="Tu contraseña"
-              disabled={loading}
-              required
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-block"
-            disabled={loading}
-          >
-            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-          </button>
-        </form>
+            <p className="auth-switch-text">
+              ¿No tienes cuenta?{' '}
+              <button
+                type="button"
+                className="link-button"
+                onClick={() => props.onSwitchToRegister && props.onSwitchToRegister()}
+              >
+                Regístrate
+              </button>
+            </p>
+          </form>
+        </section>
       </div>
     </div>
   );

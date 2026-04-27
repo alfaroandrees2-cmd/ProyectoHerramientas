@@ -180,3 +180,33 @@ SET @sql := IF(@exists = 0,
     'CREATE INDEX idx_slot_estado_fecha ON Slot(estado, fecha)',
     'SELECT ''idx_slot_estado_fecha ya existe''');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- 6) Renombrar tablas para consistencia con JPA
+RENAME TABLE DoctorEspecialidad TO doctor_especialidad;
+RENAME TABLE HorarioBase TO horario_base;
+
+--Datos ficticios para la tabla Doctor
+INSERT INTO Doctor (nombre, apellido, experiencia_anios, consultorio, foto_url, clinica_id) VALUES
+('Carlos', 'Rodríguez', 15, '301', 'https://via.placeholder.com/150?text=Carlos', 1),
+('Ana', 'Martínez', 12, '205', 'https://via.placeholder.com/150?text=Ana', 1),
+('Luis', 'Fernández', 20, '402', 'https://via.placeholder.com/150?text=Luis', 1)
+;
+
+--Datos ficticios para la tabla Especialidad
+-- Dr. Carlos Rodríguez -> Cardiología
+INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id) 
+SELECT d.id, e.id FROM Doctor d, Especialidad e 
+WHERE d.nombre='Carlos' AND d.apellido='Rodríguez' AND e.nombre='Cardiología'
+ON DUPLICATE KEY UPDATE doctor_id=doctor_id;
+
+-- Dra. Ana Martínez -> Pediatría
+INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id) 
+SELECT d.id, e.id FROM Doctor d, Especialidad e 
+WHERE d.nombre='Ana' AND d.apellido='Martínez' AND e.nombre='Pediatría'
+ON DUPLICATE KEY UPDATE doctor_id=doctor_id;
+
+-- Dr. Luis Fernández -> Neurología
+INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id) 
+SELECT d.id, e.id FROM Doctor d, Especialidad e 
+WHERE d.nombre='Luis' AND d.apellido='Fernández' AND e.nombre='Neurología'
+ON DUPLICATE KEY UPDATE doctor_id=doctor_id;

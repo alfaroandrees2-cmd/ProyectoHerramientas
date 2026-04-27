@@ -7,6 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/**
+ * Payload de autenticación por credenciales (email + password).
+ */
 public class LoginRequest {
 
     @NotBlank(message = "El email es obligatorio")

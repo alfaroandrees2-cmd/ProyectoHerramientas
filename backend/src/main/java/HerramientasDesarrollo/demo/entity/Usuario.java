@@ -23,6 +23,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+/**
+ * Entidad de identidad del sistema. Modela credenciales, rol y metadatos de alta.
+ */
 public class Usuario {
 
     @Id

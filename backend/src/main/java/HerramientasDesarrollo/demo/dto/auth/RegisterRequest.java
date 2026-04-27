@@ -9,6 +9,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
+/**
+ * Datos de alta de usuario; el rol se valida por política de seguridad en servicio.
+ */
 public class RegisterRequest {
 
     @NotBlank(message = "El nombre es obligatorio")

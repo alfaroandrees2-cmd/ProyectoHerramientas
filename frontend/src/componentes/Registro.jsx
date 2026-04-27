@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/Registro.css';
+import logoSkipline from '../assets/images/logo.png';
 
 const Registro = (props) => {
   const [loading, setLoading] = useState(false);
@@ -122,12 +123,24 @@ const Registro = (props) => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <form onSubmit={handleRegistroSubmit} className="auth-form">
-          <h2>Crear Cuenta</h2>
+      <div className="auth-card auth-split-card">
+        <aside className="auth-visual-panel">
+          <div className="visual-glow visual-glow-top" aria-hidden="true" />
+          <div className="visual-glow visual-glow-bottom" aria-hidden="true" />
+          <h1>Empieza con Skipline</h1>
+          <p>
+            Crea tu cuenta para acceder a una gestion de salud moderna y organizada desde el
+            primer dia.
+          </p>
+        </aside>
 
-          {error && <div className="alert alert-error">{error}</div>}
-          {success && <div className="alert alert-success">{success}</div>}
+        <section className="auth-form-panel">
+          <form onSubmit={handleRegistroSubmit} className="auth-form">
+            <img src={logoSkipline} alt="Skipline Logo" className="form-logo" />
+            <h2>Crear Cuenta</h2>
+
+            {error && <div className="alert alert-error">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
 
             <div className="form-group">
               <label htmlFor="nombre">Nombre Completo</label>
@@ -137,7 +150,7 @@ const Registro = (props) => {
                 name="nombre"
                 value={registroForm.nombre}
                 onChange={handleRegistroChange}
-                placeholder="Juan Pérez"
+                placeholder=""
                 disabled={loading}
                 required
               />
@@ -151,7 +164,7 @@ const Registro = (props) => {
                 name="email"
                 value={registroForm.email}
                 onChange={handleRegistroChange}
-                placeholder="correo@ejemplo.com"
+                placeholder=""
                 disabled={loading}
                 required
               />
@@ -165,7 +178,7 @@ const Registro = (props) => {
                 name="password"
                 value={registroForm.password}
                 onChange={handleRegistroChange}
-                placeholder="Mínimo 6 caracteres"
+                placeholder=""
                 disabled={loading}
                 required
               />
@@ -179,20 +192,32 @@ const Registro = (props) => {
                 name="passwordConfirm"
                 value={registroForm.passwordConfirm}
                 onChange={handleRegistroChange}
-                placeholder="Repite tu contraseña"
+                placeholder=""
                 disabled={loading}
                 required
               />
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary btn-block"
               disabled={loading}
             >
               {loading ? 'Registrando...' : 'Registrarse'}
             </button>
-        </form>
+
+            <p className="auth-switch-text">
+              ¿Ya tienes cuenta?{' '}
+              <button
+                type="button"
+                className="link-button"
+                onClick={() => props.onSwitchToLogin && props.onSwitchToLogin()}
+              >
+                Inicia sesión
+              </button>
+            </p>
+          </form>
+        </section>
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ function App() {
   const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
+    setIsLogin(true);
+
     // Verificar si hay token guardado al cargar
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -32,25 +34,16 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="auth-toggle-container">
-        <button
-          className={`toggle-btn ${!isLogin ? 'active' : ''}`}
-          onClick={() => setIsLogin(false)}
-        >
-          Registro
-        </button>
-        <button
-          className={`toggle-btn ${isLogin ? 'active' : ''}`}
-          onClick={() => setIsLogin(true)}
-        >
-          Iniciar Sesión
-        </button>
-      </div>
-      
       {!isLogin ? (
-        <Registro onAuthSuccess={handleAuthSuccess} />
+        <Registro
+          onAuthSuccess={handleAuthSuccess}
+          onSwitchToLogin={() => setIsLogin(true)}
+        />
       ) : (
-        <Login onAuthSuccess={handleAuthSuccess} />
+        <Login
+          onAuthSuccess={handleAuthSuccess}
+          onSwitchToRegister={() => setIsLogin(false)}
+        />
       )}
     </div>
   )

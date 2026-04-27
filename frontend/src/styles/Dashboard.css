@@ -1,45 +1,49 @@
 .dashboard-page {
   min-height: 100vh;
   padding: 24px;
-  background: linear-gradient(160deg, #edf2f7 0%, #dde6f5 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1f2937;
+  background: var(--color-bg);
+  font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-text);
 }
 
 .topbar {
   max-width: 1240px;
   margin: 0 auto 24px;
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
-  padding: 18px 22px;
+  background: var(--color-surface);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--color-shadow);
+  padding: 20px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid var(--color-border);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .brand-logo {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #6366f1, #9333ea);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: var(--color-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
+  font-size: 20px;
+  box-shadow: 0 2px 10px rgba(42, 125, 225, 0.3);
 }
 
 .brand h1 {
   margin: 0;
   font-size: 28px;
   line-height: 1;
+  color: var(--color-text);
 }
 
 .brand p {
@@ -49,12 +53,20 @@
 }
 
 .logout-btn {
-  background: linear-gradient(135deg, #ef4444, #ec4899);
-  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: var(--color-surface);
   border: none;
   border-radius: 12px;
-  padding: 11px 16px;
-  font-weight: 700;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
 .stats-grid,
@@ -67,38 +79,47 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-  margin-bottom: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .stat-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
+  padding: 24px;
+  box-shadow: 0 4px 20px var(--color-shadow);
+  border: 1px solid var(--color-border);
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
 }
 
 .stat-label {
   color: #6b7280;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .stat-value {
   font-size: 36px;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-primary);
 }
 
 .filters-box {
-  margin-bottom: 18px;
-  background: #ffffff;
+  margin-bottom: 24px;
+  background: var(--color-surface);
   border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
+  padding: 24px;
+  box-shadow: 0 4px 20px var(--color-shadow);
+  border: 1px solid var(--color-border);
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 14px;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
 }
 
 .filter-group {
@@ -108,96 +129,129 @@
 }
 
 .filter-group label {
-  font-weight: 700;
-  color: #374151;
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 14px;
 }
 
 .filter-group input,
 .filter-group select {
-  border: 1px solid #d1d5db;
+  border: 2px solid var(--color-border);
   border-radius: 12px;
-  padding: 12px;
-  font-size: 15px;
+  padding: 12px 16px;
+  font-size: 16px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: all 0.2s ease;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-accent-bg);
 }
 
 .doctores-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .doctor-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
+  padding: 24px;
+  box-shadow: 0 4px 20px var(--color-shadow);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+}
+
+.doctor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px var(--color-shadow);
 }
 
 .doctor-card-top {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .doctor-card h2 {
   margin: 0;
-  font-size: 29px;
+  font-size: 24px;
+  color: var(--color-text);
 }
 
 .especialidad {
-  color: #4f46e5;
-  font-weight: 700;
-  margin-top: 8px;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-top: 4px;
+  font-size: 14px;
 }
 
 .rating {
-  background: #f59e0b;
-  color: #ffffff;
-  border-radius: 999px;
-  padding: 7px 12px;
-  font-weight: 700;
+  background: var(--color-success);
+  color: var(--color-surface);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 12px;
   height: fit-content;
 }
 
 .doctor-meta {
-  margin: 14px 0 16px;
-  padding-left: 18px;
-  color: #4b5563;
+  margin: 16px 0 20px;
+  padding-left: 0;
+  color: #6b7280;
   display: grid;
-  gap: 6px;
+  gap: 8px;
+  font-size: 14px;
 }
 
 .estado {
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .estado.ok {
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 .estado.off {
-  color: #dc2626;
+  color: #ef4444;
 }
 
 .panel-state {
   grid-column: 1 / -1;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 14px;
-  color: #374151;
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--color-text);
+  text-align: center;
+  box-shadow: 0 2px 10px var(--color-shadow);
+  border: 1px solid var(--color-border);
 }
 
 .panel-error {
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  color: #ef4444;
+  border-color: #fecaca;
+  background: #fef2f2;
 }
 
 .notice-box {
-  margin-top: 18px;
-  background: #ffffff;
+  margin-top: 24px;
+  background: var(--color-surface);
   border-radius: 16px;
-  padding: 14px 18px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 20px var(--color-shadow);
+  border: 1px solid var(--color-border);
+  color: #6b7280;
+  text-align: center;
+}
   box-shadow: 0 8px 30px rgba(17, 24, 39, 0.08);
   color: #4b5563;
 }

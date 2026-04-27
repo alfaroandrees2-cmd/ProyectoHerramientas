@@ -104,7 +104,7 @@ const Login = (props) => {
           <div className="visual-glow visual-glow-bottom" aria-hidden="true" />
           <h1>Bienvenido de nuevo</h1>
           <p>
-            Gestiona citas, pacientes y horarios en una sola plataforma con una experiencia
+            Gestiona citas y horarios en una sola plataforma con una experiencia
             rapida y clara.
           </p>
         </aside>

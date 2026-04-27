@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { doctorService } from '../services/doctorService';
+import logoSkipline from '../assets/images/logo.png';
 import '../styles/Dashboard.css';
 
 const Dashboard = (props) => {
@@ -55,10 +56,9 @@ const Dashboard = (props) => {
     <main className="dashboard-page">
       <header className="topbar">
         <div className="brand">
-          <div className="brand-logo">*</div>
-          <div>
-            <h1>Skipline</h1>
-            <p>Sistema de Gestion de Doctores</p>
+          <img src={logoSkipline} alt="Skipline Logo" className="brand-logo" />
+          <div className="brand-text">
+            <p>Sistema de Gestion de Citas Médicas</p>
           </div>
         </div>
         <button className="logout-btn" type="button" onClick={props.onLogout}>
@@ -127,7 +127,7 @@ const Dashboard = (props) => {
             </div>
 
             <ul className="doctor-meta">
-              <li>{doctor.experiencia} anos de experiencia</li>
+              <li>{doctor.experiencia} años de experiencia</li>
               <li>Consultorio {doctor.consultorio || 'Sin dato'}</li>
               <li>{formatProximaCita(doctor)}</li>
             </ul>

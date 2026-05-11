@@ -1,53 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import citasService from '../services/citasService';
 import '../styles/AppointmentModal.css';
 
 const AppointmentModal = ({ isOpen, onClose, doctor }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [horarios, setHorarios] = useState([]);
+  const [cargandoHorarios, setCargandoHorarios] = useState(false);
+  const [errorHorarios, setErrorHorarios] = useState(null);
 
-  // Datos MOCK - Doctor información
-  const mockDoctor = doctor || {
-    id: 1,
-    name: 'Dr. Juan Pérez',
-    specialty: 'Cardiología',
-    office: 'Consultorio 305',
-    image: 'https://via.placeholder.com/80',
-  };
-
-  // Datos MOCK - Horarios disponibles por día
-  const mockTimeSlots = [
-    { id: 1, time: '09:00', available: true },
-    { id: 2, time: '09:30', available: true },
-    { id: 3, time: '10:00', available: false },
-    { id: 4, time: '10:30', available: true },
-    { id: 5, time: '11:00', available: true },
-    { id: 6, time: '11:30', available: false },
-    { id: 7, time: '14:00', available: true },
-    { id: 8, time: '14:30', available: true },
-    { id: 9, time: '15:00', available: true },
-    { id: 10, time: '15:30', available: false },
-    { id: 11, time: '16:00', available: true },
-    { id: 12, time: '16:30', available: true },
-  ];
-
-  // Datos MOCK - Días disponibles (próximos 30 días)
-  const generateAvailableDays = () => {
-    const days = [];
-    const today = new Date();
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() + i);
-      // Excluir fines de semana
-      if (date.getDay() !== 0 && date.getDay() !== 6) {
-        days.push(new Date(date));
-      }
-    }
-    return days;
-  };
-
-  const availableDays = generateAvailableDays();
-
-  // Funciones auxiliares para el calendario
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
@@ -55,6 +16,39 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
   const getFirstDayOfMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
+
+  useEffect(() => {
+    if (!isOpen || !doctor?.id) return;
+
+    const cargarHorarios = async () => {
+      try {
+        setCargandoHorarios(true);
+        setErrorHorarios(null);
+
+        const fechaFormato = selectedDate.toISOString().split('T')[0];
+        const slotsDelBackend = await citasService.obtenerSlotsDisponibles(
+          doctor.id,
+          fechaFormato
+        );
+
+        const horariosTransformados = slotsDelBackend.map((slot) => ({
+          id: slot.id,
+          time: slot.horaInicio,
+          available: slot.estado === 'DISPONIBLE',
+          horaFin: slot.horaFin
+        }));
+
+        setHorarios(horariosTransformados);
+      } catch (error) {
+        console.error('Error al cargar horarios:', error);
+        setErrorHorarios('No se pudieron cargar los horarios.');
+      } finally {
+        setCargandoHorarios(false);
+      }
+    };
+
+    cargarHorarios();
+  }, [isOpen, selectedDate, doctor?.id]);
 
   const handlePrevMonth = () => {
     setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1));
@@ -76,25 +70,26 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
     }
   };
 
-  const handleConfirmAppointment = () => {
-    if (selectedSlot) {
-      const selectedTimeSlot = mockTimeSlots.find(slot => slot.id === selectedSlot);
-      console.log('Cita confirmada:', {
-        doctor: mockDoctor,
-        date: selectedDate.toLocaleDateString('es-ES'),
-        time: selectedTimeSlot.time,
-      });
-      // Aquí irá la lógica para enviar al backend
+  const handleConfirmAppointment = async () => {
+    if (!selectedSlot) return;
+
+    try {
+      const datoCita = {
+        slotId: selectedSlot,
+        motivo: 'Consulta médica'
+      };
+
+      await citasService.crearCita(datoCita);
+      alert('¡Cita agendada exitosamente!');
       onClose();
+    } catch (error) {
+      console.error('Error al crear cita:', error);
+      alert(`Error: ${error.message}`);
     }
   };
 
   const isDateAvailable = (date) => {
-    return availableDays.some(
-      d => d.getDate() === date.getDate() &&
-           d.getMonth() === date.getMonth() &&
-           d.getFullYear() === date.getFullYear()
-    );
+    return date.getDay() !== 0 && date.getDay() !== 6;
   };
 
   const isDateSelected = (date) => {
@@ -110,18 +105,15 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
            date.getFullYear() === today.getFullYear();
   };
 
-  // Renderizar días del calendario
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(selectedDate);
     const firstDay = getFirstDayOfMonth(selectedDate);
     const days = [];
 
-    // Días vacíos al inicio
     for (let i = 0; i < firstDay; i++) {
       days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
 
-    // Días del mes
     for (let day = 1; day <= daysInMonth; day++) {
       const currentDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day);
       const available = isDateAvailable(currentDate);
@@ -148,71 +140,45 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
   return (
     <div className="appointment-modal-overlay" onClick={onClose}>
       <div className="appointment-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Botón cerrar */}
-        <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar modal">
-          ✕
-        </button>
+        <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar modal">✕</button>
 
-        {/* Header con información del doctor */}
         <div className="modal-header">
           <div className="doctor-info">
             <img
-              src={mockDoctor.image}
-              alt={mockDoctor.name}
+              src={doctor.image || 'https://via.placeholder.com/80'}
+              alt={doctor.name}
               className="doctor-image"
             />
             <div className="doctor-details">
-              <h2 className="doctor-name">{mockDoctor.name}</h2>
-              <p className="doctor-specialty">{mockDoctor.specialty}</p>
+              <h2 className="doctor-name">{doctor.name}</h2>
+              <p className="doctor-specialty">{doctor.specialty}</p>
               <p className="doctor-office">
-                <span className="office-icon">📍</span> {mockDoctor.office}
+                <span className="office-icon">📍</span> {doctor.office}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Contenido principal */}
         <div className="modal-content">
-          {/* Calendario a la izquierda */}
           <div className="calendar-section">
             <div className="calendar-header">
-              <button
-                className="calendar-nav-btn"
-                onClick={handlePrevMonth}
-                aria-label="Mes anterior"
-              >
-                ←
-              </button>
+              <button className="calendar-nav-btn" onClick={handlePrevMonth} aria-label="Mes anterior">←</button>
               <h3 className="calendar-title">
-                {selectedDate.toLocaleDateString('es-ES', {
-                  month: 'long',
-                  year: 'numeric',
-                })}
+                {selectedDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
               </h3>
-              <button
-                className="calendar-nav-btn"
-                onClick={handleNextMonth}
-                aria-label="Próximo mes"
-              >
-                →
-              </button>
+              <button className="calendar-nav-btn" onClick={handleNextMonth} aria-label="Próximo mes">→</button>
             </div>
 
-            {/* Días de la semana */}
             <div className="calendar-weekdays">
               {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'].map((day) => (
-                <div key={day} className="weekday">
-                  {day}
-                </div>
+                <div key={day} className="weekday">{day}</div>
               ))}
             </div>
 
-            {/* Días del mes */}
             <div className="calendar-grid">
               {renderCalendarDays()}
             </div>
 
-            {/* Leyenda */}
             <div className="calendar-legend">
               <div className="legend-item">
                 <div className="legend-color available"></div>
@@ -225,20 +191,15 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
             </div>
           </div>
 
-          {/* Horarios a la derecha */}
           <div className="timeslots-section">
-            <div className="timeslots-header">
-              <h3 className="timeslots-title">
-                {selectedDate.toLocaleDateString('es-ES', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                })}
-              </h3>
-            </div>
+            <h3 className="timeslots-title">
+              {selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </h3>
 
             <div className="timeslots-grid">
-              {mockTimeSlots.map((slot) => (
+              {cargandoHorarios && <p className="timeslot-loading">Cargando horarios...</p>}
+              {!cargandoHorarios && errorHorarios && <p className="timeslot-error">{errorHorarios}</p>}
+              {!cargandoHorarios && horarios.map((slot) => (
                 <button
                   key={slot.id}
                   className={`timeslot-card ${!slot.available ? 'unavailable' : ''} ${selectedSlot === slot.id ? 'selected' : ''}`}
@@ -249,28 +210,14 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
                   {!slot.available && <span className="timeslot-status">Ocupado</span>}
                 </button>
               ))}
+              {!cargandoHorarios && horarios.length === 0 && <p className="no-slots-message">No hay horarios disponibles para esta fecha.</p>}
             </div>
-
-            {mockTimeSlots.every(slot => !slot.available) && (
-              <p className="no-slots-message">
-                No hay horarios disponibles para esta fecha.
-              </p>
-            )}
           </div>
         </div>
 
-        {/* Footer con botones de acción */}
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cancelar
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={handleConfirmAppointment}
-            disabled={!selectedSlot}
-          >
-            Confirmar Cita
-          </button>
+          <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
+          <button className="btn btn-primary" onClick={handleConfirmAppointment} disabled={!selectedSlot}>Confirmar Cita</button>
         </div>
       </div>
     </div>

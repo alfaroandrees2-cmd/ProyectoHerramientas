@@ -1,3 +1,5 @@
+/* Modal de Citas - Estilos */
+
 /* Overlay de fondo */
 .appointment-modal-overlay {
   position: fixed;
@@ -25,10 +27,9 @@
 
 /* Modal principal */
 .appointment-modal {
-  background: var(--color-surface);
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(42, 125, 225, 0.15),
-              0 0 1px rgba(42, 125, 225, 0.1);
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-width: 900px;
   width: 95%;
   max-height: 85vh;
@@ -36,8 +37,6 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  border: 1px solid rgba(42, 125, 225, 0.1);
-  animation: slideUp 0.3s ease-out;
 }
 
 @keyframes slideUp {
@@ -59,8 +58,8 @@
   width: 36px;
   height: 36px;
   border: none;
-  background: var(--color-accent-bg);
-  color: var(--color-primary);
+  background: #f0f0f0;
+  color: #2A7DE1;
   border-radius: 8px;
   font-size: 20px;
   cursor: pointer;
@@ -69,23 +68,18 @@
   justify-content: center;
   transition: all 0.2s ease;
   z-index: 10;
-  font-weight: bold;
 }
 
 .modal-close-btn:hover {
-  background: rgba(42, 125, 225, 0.2);
+  background: #e0e0e0;
   transform: scale(1.1);
-}
-
-.modal-close-btn:active {
-  transform: scale(0.95);
 }
 
 /* Header del modal */
 .modal-header {
-  padding: 32px 32px 24px;
-  border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(135deg, rgba(42, 125, 225, 0.05) 0%, rgba(230, 242, 255, 0.3) 100%);
+  padding: 32px;
+  border-bottom: 1px solid #eee;
+  background: linear-gradient(135deg, rgba(42, 125, 225, 0.08) 0%, rgba(230, 242, 255, 0.4) 100%);
 }
 
 .doctor-info {
@@ -99,8 +93,7 @@
   height: 80px;
   border-radius: 12px;
   object-fit: cover;
-  border: 3px solid var(--color-primary);
-  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.15);
+  border: 2px solid #2A7DE1;
 }
 
 .doctor-details {
@@ -108,559 +101,411 @@
 }
 
 .doctor-name {
-  margin: 0 0 8px;
+  margin: 0 0 4px 0;
   font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text);
-  letter-spacing: 0.3px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
 .doctor-specialty {
-  margin: 0 0 8px;
+  margin: 0 0 8px 0;
   font-size: 14px;
-  color: var(--color-primary);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #2A7DE1;
+  font-weight: 500;
 }
 
 .doctor-office {
   margin: 0;
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #666;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.office-icon {
-  font-size: 16px;
+  gap: 6px;
 }
 
 /* Contenido principal */
 .modal-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  display: flex;
   flex: 1;
+  overflow: hidden;
+  gap: 32px;
   padding: 32px;
-  overflow-y: auto;
-  background: var(--color-surface);
 }
 
 /* Sección del calendario */
 .calendar-section {
+  flex: 0 0 40%;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border-right: 1px solid #eee;
+  padding-right: 32px;
+  overflow-y: auto;
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 0;
+  gap: 16px;
+}
+
+.calendar-nav-btn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  color: #2A7DE1;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background: #2A7DE1;
+  color: white;
 }
 
 .calendar-title {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-text);
-  text-transform: capitalize;
+  color: #1a1a1a;
   flex: 1;
   text-align: center;
+  text-transform: capitalize;
 }
 
-.calendar-nav-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.calendar-nav-btn:hover {
-  background: var(--color-accent-bg);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.calendar-nav-btn:active {
-  transform: scale(0.95);
-}
-
-/* Días de la semana */
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
 .weekday {
   text-align: center;
   font-size: 12px;
-  font-weight: 700;
-  color: #6b7280;
-  text-transform: uppercase;
+  font-weight: 600;
+  color: #666;
   padding: 8px 0;
-  letter-spacing: 0.5px;
 }
 
-/* Grid de días del calendario */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .calendar-day {
   aspect-ratio: 1;
-  border: 1px solid var(--color-border);
+  border: 1px solid #ddd;
   border-radius: 8px;
-  background: var(--color-surface);
+  background: white;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text);
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-}
-
-.calendar-day.empty {
-  border: none;
-  background: transparent;
-  cursor: default;
-}
-
-.calendar-day.unavailable {
-  color: #d1d5db;
-  background: #f9fafb;
-  border-color: #e5e7eb;
-  cursor: not-allowed;
 }
 
 .calendar-day.available {
-  border-color: var(--color-border);
-  color: var(--color-text);
+  border-color: #2A7DE1;
+  color: #2A7DE1;
 }
 
-.calendar-day.available:hover:not(:disabled) {
-  background: var(--color-accent-bg);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+.calendar-day.available:hover {
+  background: #f0f8ff;
   transform: scale(1.05);
 }
 
+.calendar-day.unavailable {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #e0e0e0;
+}
+
 .calendar-day.selected {
-  background: var(--color-primary);
+  background: #2A7DE1;
   color: white;
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.3);
+  border-color: #2A7DE1;
 }
 
 .calendar-day.today {
   font-weight: 700;
-  border-color: var(--color-primary);
 }
 
-/* Leyenda del calendario */
+.calendar-day.empty {
+  background: transparent;
+  border: none;
+  cursor: auto;
+}
+
 .calendar-legend {
   display: flex;
-  gap: 20px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border);
+  gap: 16px;
   font-size: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #6b7280;
+  gap: 6px;
+  color: #666;
 }
 
 .legend-color {
   width: 12px;
   height: 12px;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .legend-color.available {
-  background: var(--color-secondary);
-  border: 1px solid var(--color-primary);
+  border: 1px solid #2A7DE1;
+  background: #f0f8ff;
 }
 
 .legend-color.unavailable {
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
 }
 
 /* Sección de horarios */
 .timeslots-section {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow-y: auto;
 }
 
 .timeslots-header {
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 2px solid #2A7DE1;
 }
 
 .timeslots-title {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-text);
+  color: #1a1a1a;
   text-transform: capitalize;
 }
 
-/* Grid de horarios */
 .timeslots-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   flex: 1;
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-
-.timeslots-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.timeslots-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.timeslots-grid::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-.timeslots-grid::-webkit-scrollbar-thumb:hover {
-  background: #bfdbfe;
 }
 
 .timeslot-card {
-  padding: 12px;
-  border: 2px solid var(--color-border);
+  padding: 16px;
+  border: 2px solid #ddd;
   border-radius: 12px;
-  background: var(--color-surface);
+  background: white;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text);
-  position: relative;
-  overflow: hidden;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.timeslot-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--color-accent-bg);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 0;
-}
-
-.timeslot-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-.timeslot-card:not(.unavailable):hover {
-  border-color: var(--color-primary);
+.timeslot-card:hover:not(.unavailable) {
+  border-color: #2A7DE1;
+  background: #f0f8ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(42, 125, 225, 0.1);
 }
 
-.timeslot-card:not(.unavailable):hover::before {
-  opacity: 1;
-}
-
-.timeslot-time {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-primary);
+.timeslot-card.selected {
+  background: #2A7DE1;
+  color: white;
+  border-color: #2A7DE1;
 }
 
 .timeslot-card.unavailable {
-  background: #f9fafb;
-  border-color: #e5e7eb;
-  color: #d1d5db;
+  background: #f5f5f5;
+  color: #999;
+  border-color: #e0e0e0;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.timeslot-card.unavailable .timeslot-time {
-  color: #9ca3af;
+.timeslot-time {
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .timeslot-status {
   font-size: 11px;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  opacity: 0.7;
 }
 
-.timeslot-card.selected {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: white;
-  box-shadow: 0 4px 16px rgba(42, 125, 225, 0.3);
+.timeslot-loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 32px 16px;
+  color: #2A7DE1;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
 }
 
-.timeslot-card.selected .timeslot-time {
-  color: white;
-  font-size: 16px;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
-.timeslot-card.selected .timeslot-status {
-  display: none;
+.timeslot-error {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 16px;
+  background: #fee;
+  color: #c33;
+  border-radius: 8px;
+  font-size: 14px;
+  margin: 0;
 }
 
 .no-slots-message {
-  text-align: center;
-  color: #9ca3af;
-  font-size: 14px;
-  padding: 40px 20px;
-  margin: 0;
   grid-column: 1 / -1;
+  text-align: center;
+  padding: 32px 16px;
+  color: #999;
+  font-size: 14px;
+  margin: 0;
 }
 
 /* Footer del modal */
 .modal-footer {
   display: flex;
-  gap: 12px;
-  justify-content: flex-end;
+  gap: 16px;
   padding: 24px 32px;
-  border-top: 1px solid var(--color-border);
-  background: #fafbfc;
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+  justify-content: flex-end;
 }
 
-/* Botones */
 .btn {
-  padding: 12px 28px;
-  border-radius: 12px;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  letter-spacing: 0.3px;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  transition: all 0.2s;
+  text-transform: capitalize;
 }
 
 .btn-primary {
-  background: var(--color-primary);
+  background: #2A7DE1;
   color: white;
-  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.2);
 }
 
-.btn-primary:not(:disabled):hover {
-  background: #1e5fa8;
-  box-shadow: 0 6px 20px rgba(42, 125, 225, 0.3);
+.btn-primary:hover:not(:disabled) {
+  background: #2570c8;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.3);
 }
 
-.btn-primary:not(:disabled):active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(42, 125, 225, 0.2);
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .btn-secondary {
-  background: var(--color-accent-bg);
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  background: white;
+  color: #333;
+  border: 1px solid #ddd;
 }
 
 .btn-secondary:hover {
-  background: rgba(42, 125, 225, 0.15);
+  background: #f5f5f5;
+  border-color: #999;
 }
 
-.btn-secondary:active {
-  transform: scale(0.98);
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-  .appointment-modal {
-    max-width: 95%;
-    max-height: 95vh;
-  }
-
   .modal-content {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 24px;
-    padding: 20px;
+    padding: 24px;
   }
 
-  .modal-header {
-    padding: 20px 20px 16px;
-  }
-
-  .doctor-image {
-    width: 60px;
-    height: 60px;
-  }
-
-  .doctor-name {
-    font-size: 18px;
-  }
-
-  .doctor-specialty {
-    font-size: 13px;
-  }
-
-  .modal-footer {
-    padding: 16px 20px;
-    flex-direction: column-reverse;
-    gap: 8px;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 14px;
+  .calendar-section {
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding-right: 0;
+    padding-bottom: 24px;
   }
 
   .timeslots-grid {
-    grid-template-columns: repeat(4, 1fr);
-    max-height: 250px;
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .timeslot-card {
-    padding: 10px;
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    flex: 1;
   }
 }
 
 @media (max-width: 640px) {
-  .appointment-modal {
-    width: 100%;
-    max-height: 100vh;
-    border-radius: 12px;
-  }
-
-  .modal-close-btn {
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
-  }
-
   .modal-header {
-    padding: 16px;
+    padding: 24px;
   }
 
   .doctor-info {
-    gap: 16px;
+    gap: 12px;
   }
 
   .doctor-image {
-    width: 50px;
-    height: 50px;
+    width: 64px;
+    height: 64px;
   }
 
   .doctor-name {
-    font-size: 16px;
-    margin-bottom: 4px;
-  }
-
-  .doctor-specialty {
-    font-size: 12px;
-    margin-bottom: 4px;
-  }
-
-  .doctor-office {
-    font-size: 12px;
+    font-size: 18px;
   }
 
   .modal-content {
     padding: 16px;
-    gap: 20px;
-  }
-
-  .calendar-title,
-  .timeslots-title {
-    font-size: 14px;
-  }
-
-  .calendar-day {
-    font-size: 12px;
+    gap: 16px;
   }
 
   .timeslots-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-height: 280px;
-  }
-
-  .timeslot-card {
-    padding: 8px;
-    font-size: 12px;
-  }
-
-  .timeslot-time {
-    font-size: 13px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   .modal-footer {
-    padding: 12px 16px;
+    padding: 16px;
+    gap: 8px;
   }
 
   .btn {
+    padding: 10px 16px;
     font-size: 13px;
-    padding: 12px;
   }
-
-  .calendar-legend {
-    font-size: 11px;
-    gap: 12px;
-  }
-}
-
-/* Scroll suave */
-.timeslots-grid {
-  scroll-behavior: smooth;
-}
-
-/* Focus visible para accesibilidad */
-.calendar-day:focus-visible,
-.calendar-nav-btn:focus-visible,
-.timeslot-card:focus-visible,
-.btn:focus-visible,
-.modal-close-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }

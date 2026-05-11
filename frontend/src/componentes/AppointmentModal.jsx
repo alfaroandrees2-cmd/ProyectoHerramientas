@@ -219,7 +219,7 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
               <h2 className="doctor-name">{doctor.name}</h2>
               <p className="doctor-specialty">{doctor.specialty}</p>
               <p className="doctor-office">
-                <span className="office-icon">📍</span> {doctor.office}
+                <span className="office-icon"></span> {doctor.office}
               </p>
             </div>
           </div>
@@ -239,11 +239,12 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
           )}
 
           <div className="calendar-section">
+            <h3 className="section-title">Selecciona una Fecha</h3>
             <div className="calendar-header">
               <button className="calendar-nav-btn" onClick={handlePrevMonth} aria-label="Mes anterior">←</button>
-              <h3 className="calendar-title">
+              <h4 className="calendar-title">
                 {selectedDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-              </h3>
+              </h4>
               <button className="calendar-nav-btn" onClick={handleNextMonth} aria-label="Próximo mes">→</button>
             </div>
 
@@ -270,9 +271,10 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
           </div>
 
           <div className="timeslots-section">
-            <h3 className="timeslots-title">
+            <h3 className="section-title">Horarios Disponibles</h3>
+            <p className="timeslots-date">
               {selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </h3>
+            </p>
 
             <div className="timeslots-grid">
               {cargandoHorarios && <p className="timeslot-loading">Cargando horarios...</p>}
@@ -294,31 +296,6 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
         </div>
 
         <div className="modal-appointment-details">
-          <div className="form-group">
-            <label htmlFor="motivo" className="form-label">
-              Motivo de la cita <span className="required">*</span>
-            </label>
-            <textarea
-              id="motivo"
-              className={`form-textarea ${mensajeError && !motivo.trim() ? 'error' : ''}`}
-              placeholder="Describe brevemente el motivo de tu cita..."
-              value={motivo}
-              onChange={(e) => {
-                setMotivo(e.target.value);
-                setMensajeError(null);
-              }}
-              disabled={cargandoReserva}
-              rows={3}
-              maxLength={255}
-            />
-            <div className="form-help">
-              {motivo.length}/255 caracteres
-              {motivo.trim().length < 5 && motivo.trim().length > 0 && (
-                <span className="text-warning"> (mínimo 5 caracteres)</span>
-              )}
-            </div>
-          </div>
-
           {selectedSlot && (
             <div className="appointment-summary">
               <h4 className="summary-title">Resumen de tu cita</h4>
@@ -348,6 +325,31 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
               </div>
             </div>
           )}
+
+          <div className="form-group">
+            <label htmlFor="motivo" className="form-label">
+              Motivo de la cita <span className="required"></span>
+            </label>
+            <textarea
+              id="motivo"
+              className={`form-textarea ${mensajeError && !motivo.trim() ? 'error' : ''}`}
+              placeholder="Describe brevemente el motivo de tu cita..."
+              value={motivo}
+              onChange={(e) => {
+                setMotivo(e.target.value);
+                setMensajeError(null);
+              }}
+              disabled={cargandoReserva}
+              rows={3}
+              maxLength={255}
+            />
+            <div className="form-help">
+              {motivo.length}/255 caracteres
+              {motivo.trim().length < 5 && motivo.trim().length > 0 && (
+                <span className="text-warning"> (mínimo 5 caracteres)</span>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="modal-footer">

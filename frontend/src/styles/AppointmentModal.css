@@ -1,0 +1,666 @@
+/* Overlay de fondo */
+.appointment-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal principal */
+.appointment-modal {
+  background: var(--color-surface);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(42, 125, 225, 0.15),
+              0 0 1px rgba(42, 125, 225, 0.1);
+  max-width: 900px;
+  width: 95%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(42, 125, 225, 0.1);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Botón cerrar */
+.modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--color-accent-bg);
+  color: var(--color-primary);
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  font-weight: bold;
+}
+
+.modal-close-btn:hover {
+  background: rgba(42, 125, 225, 0.2);
+  transform: scale(1.1);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Header del modal */
+.modal-header {
+  padding: 32px 32px 24px;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(135deg, rgba(42, 125, 225, 0.05) 0%, rgba(230, 242, 255, 0.3) 100%);
+}
+
+.doctor-info {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.doctor-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid var(--color-primary);
+  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.15);
+}
+
+.doctor-details {
+  flex: 1;
+}
+
+.doctor-name {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0.3px;
+}
+
+.doctor-specialty {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.doctor-office {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.office-icon {
+  font-size: 16px;
+}
+
+/* Contenido principal */
+.modal-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  background: var(--color-surface);
+}
+
+/* Sección del calendario */
+.calendar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+}
+
+.calendar-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: capitalize;
+  flex: 1;
+  text-align: center;
+}
+
+.calendar-nav-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--color-accent-bg);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.calendar-nav-btn:active {
+  transform: scale(0.95);
+}
+
+/* Días de la semana */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  padding: 8px 0;
+  letter-spacing: 0.5px;
+}
+
+/* Grid de días del calendario */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.calendar-day.empty {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+.calendar-day.unavailable {
+  color: #d1d5db;
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.calendar-day.available {
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.calendar-day.available:hover:not(:disabled) {
+  background: var(--color-accent-bg);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.calendar-day.selected {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.3);
+}
+
+.calendar-day.today {
+  font-weight: 700;
+  border-color: var(--color-primary);
+}
+
+/* Leyenda del calendario */
+.calendar-legend {
+  display: flex;
+  gap: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.legend-color.available {
+  background: var(--color-secondary);
+  border: 1px solid var(--color-primary);
+}
+
+.legend-color.unavailable {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+/* Sección de horarios */
+.timeslots-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeslots-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.timeslots-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: capitalize;
+}
+
+/* Grid de horarios */
+.timeslots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  flex: 1;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.timeslots-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.timeslots-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.timeslots-grid::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.timeslots-grid::-webkit-scrollbar-thumb:hover {
+  background: #bfdbfe;
+}
+
+.timeslot-card {
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  position: relative;
+  overflow: hidden;
+}
+
+.timeslot-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-bg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 0;
+}
+
+.timeslot-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.timeslot-card:not(.unavailable):hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.1);
+}
+
+.timeslot-card:not(.unavailable):hover::before {
+  opacity: 1;
+}
+
+.timeslot-time {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.timeslot-card.unavailable {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.timeslot-card.unavailable .timeslot-time {
+  color: #9ca3af;
+}
+
+.timeslot-status {
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.timeslot-card.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 16px rgba(42, 125, 225, 0.3);
+}
+
+.timeslot-card.selected .timeslot-time {
+  color: white;
+  font-size: 16px;
+}
+
+.timeslot-card.selected .timeslot-status {
+  display: none;
+}
+
+.no-slots-message {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 40px 20px;
+  margin: 0;
+  grid-column: 1 / -1;
+}
+
+/* Footer del modal */
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 24px 32px;
+  border-top: 1px solid var(--color-border);
+  background: #fafbfc;
+}
+
+/* Botones */
+.btn {
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(42, 125, 225, 0.2);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: #1e5fa8;
+  box-shadow: 0 6px 20px rgba(42, 125, 225, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-primary:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(42, 125, 225, 0.2);
+}
+
+.btn-secondary {
+  background: var(--color-accent-bg);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(42, 125, 225, 0.15);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .appointment-modal {
+    max-width: 95%;
+    max-height: 95vh;
+  }
+
+  .modal-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 20px;
+  }
+
+  .modal-header {
+    padding: 20px 20px 16px;
+  }
+
+  .doctor-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .doctor-name {
+    font-size: 18px;
+  }
+
+  .doctor-specialty {
+    font-size: 13px;
+  }
+
+  .modal-footer {
+    padding: 16px 20px;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .timeslots-grid {
+    grid-template-columns: repeat(4, 1fr);
+    max-height: 250px;
+  }
+
+  .timeslot-card {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .appointment-modal {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 12px;
+  }
+
+  .modal-close-btn {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .doctor-info {
+    gap: 16px;
+  }
+
+  .doctor-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .doctor-name {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .doctor-specialty {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .doctor-office {
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .calendar-title,
+  .timeslots-title {
+    font-size: 14px;
+  }
+
+  .calendar-day {
+    font-size: 12px;
+  }
+
+  .timeslots-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-height: 280px;
+  }
+
+  .timeslot-card {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .timeslot-time {
+    font-size: 13px;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  .btn {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .calendar-legend {
+    font-size: 11px;
+    gap: 12px;
+  }
+}
+
+/* Scroll suave */
+.timeslots-grid {
+  scroll-behavior: smooth;
+}
+
+/* Focus visible para accesibilidad */
+.calendar-day:focus-visible,
+.calendar-nav-btn:focus-visible,
+.timeslot-card:focus-visible,
+.btn:focus-visible,
+.modal-close-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

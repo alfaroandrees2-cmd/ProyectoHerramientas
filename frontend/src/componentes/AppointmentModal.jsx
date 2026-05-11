@@ -8,6 +8,12 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
   const [horarios, setHorarios] = useState([]);
   const [cargandoHorarios, setCargandoHorarios] = useState(false);
   const [errorHorarios, setErrorHorarios] = useState(null);
+  
+  // Estados para la reserva
+  const [motivo, setMotivo] = useState('');
+  const [cargandoReserva, setCargandoReserva] = useState(false);
+  const [mensajeExito, setMensajeExito] = useState(null);
+  const [mensajeError, setMensajeError] = useState(null);
 
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -17,6 +23,22 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
+  // Limpiar mensajes después de 5 segundos
+  useEffect(() => {
+    if (mensajeExito) {
+      const timer = setTimeout(() => setMensajeExito(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensajeExito]);
+
+  useEffect(() => {
+    if (mensajeError) {
+      const timer = setTimeout(() => setMensajeError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensajeError]);
+
+  // Cargar horarios disponibles
   useEffect(() => {
     if (!isOpen || !doctor?.id) return;
 
@@ -50,6 +72,13 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
     cargarHorarios();
   }, [isOpen, selectedDate, doctor?.id]);
 
+  // Limpiar formulario al cambiar de fecha
+  useEffect(() => {
+    setSelectedSlot(null);
+    setMotivo('');
+    setMensajeError(null);
+  }, [selectedDate]);
+
   const handlePrevMonth = () => {
     setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1));
   };
@@ -67,24 +96,61 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
   const handleTimeSlotClick = (slot) => {
     if (slot.available) {
       setSelectedSlot(slot.id === selectedSlot ? null : slot.id);
+      setMensajeError(null);
     }
   };
 
+  // Validar antes de confirmar
+  const validarReserva = () => {
+    if (!selectedSlot) {
+      setMensajeError('Debes seleccionar un horario');
+      return false;
+    }
+    if (!motivo.trim()) {
+      setMensajeError('Debes indicar el motivo de la cita');
+      return false;
+    }
+    if (motivo.trim().length < 5) {
+      setMensajeError('El motivo debe tener al menos 5 caracteres');
+      return false;
+    }
+    if (motivo.trim().length > 255) {
+      setMensajeError('El motivo no puede superar 255 caracteres');
+      return false;
+    }
+    return true;
+  };
+
   const handleConfirmAppointment = async () => {
-    if (!selectedSlot) return;
+    if (!validarReserva()) {
+      return;
+    }
 
     try {
+      setCargandoReserva(true);
+      setMensajeError(null);
+      setMensajeExito(null);
+
       const datoCita = {
         slotId: selectedSlot,
-        motivo: 'Consulta médica'
+        motivo: motivo.trim()
       };
 
-      await citasService.crearCita(datoCita);
-      alert('¡Cita agendada exitosamente!');
-      onClose();
+      const respuesta = await citasService.crearCita(datoCita);
+      
+      setMensajeExito('¡Cita agendada exitosamente!');
+      
+      // Cerrar modal después de 2 segundos
+      setTimeout(() => {
+        setSelectedSlot(null);
+        setMotivo('');
+        onClose();
+      }, 2000);
     } catch (error) {
       console.error('Error al crear cita:', error);
-      alert(`Error: ${error.message}`);
+      setMensajeError(error.message || 'Error al reservar la cita. Intenta nuevamente.');
+    } finally {
+      setCargandoReserva(false);
     }
   };
 
@@ -160,6 +226,18 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
         </div>
 
         <div className="modal-content">
+          {mensajeExito && (
+            <div className="alert alert-success" role="alert">
+              ✓ {mensajeExito}
+            </div>
+          )}
+          
+          {mensajeError && (
+            <div className="alert alert-error" role="alert">
+              ✗ {mensajeError}
+            </div>
+          )}
+
           <div className="calendar-section">
             <div className="calendar-header">
               <button className="calendar-nav-btn" onClick={handlePrevMonth} aria-label="Mes anterior">←</button>
@@ -215,9 +293,84 @@ const AppointmentModal = ({ isOpen, onClose, doctor }) => {
           </div>
         </div>
 
+        <div className="modal-appointment-details">
+          <div className="form-group">
+            <label htmlFor="motivo" className="form-label">
+              Motivo de la cita <span className="required">*</span>
+            </label>
+            <textarea
+              id="motivo"
+              className={`form-textarea ${mensajeError && !motivo.trim() ? 'error' : ''}`}
+              placeholder="Describe brevemente el motivo de tu cita..."
+              value={motivo}
+              onChange={(e) => {
+                setMotivo(e.target.value);
+                setMensajeError(null);
+              }}
+              disabled={cargandoReserva}
+              rows={3}
+              maxLength={255}
+            />
+            <div className="form-help">
+              {motivo.length}/255 caracteres
+              {motivo.trim().length < 5 && motivo.trim().length > 0 && (
+                <span className="text-warning"> (mínimo 5 caracteres)</span>
+              )}
+            </div>
+          </div>
+
+          {selectedSlot && (
+            <div className="appointment-summary">
+              <h4 className="summary-title">Resumen de tu cita</h4>
+              <div className="summary-content">
+                <div className="summary-row">
+                  <span className="summary-label">Doctor:</span>
+                  <span className="summary-value">{doctor.name}</span>
+                </div>
+                <div className="summary-row">
+                  <span className="summary-label">Especialidad:</span>
+                  <span className="summary-value">{doctor.specialty}</span>
+                </div>
+                <div className="summary-row">
+                  <span className="summary-label">Fecha:</span>
+                  <span className="summary-value">
+                    {selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+                {horarios.find(h => h.id === selectedSlot) && (
+                  <div className="summary-row">
+                    <span className="summary-label">Hora:</span>
+                    <span className="summary-value">
+                      {horarios.find(h => h.id === selectedSlot).time}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-          <button className="btn btn-primary" onClick={handleConfirmAppointment} disabled={!selectedSlot}>Confirmar Cita</button>
+          <button 
+            className="btn btn-secondary" 
+            onClick={onClose}
+            disabled={cargandoReserva}
+          >
+            Cancelar
+          </button>
+          <button 
+            className="btn btn-primary" 
+            onClick={handleConfirmAppointment} 
+            disabled={!selectedSlot || !motivo.trim() || cargandoReserva}
+          >
+            {cargandoReserva ? (
+              <>
+                <span className="spinner"></span> Confirmando...
+              </>
+            ) : (
+              'Confirmar Cita'
+            )}
+          </button>
         </div>
       </div>
     </div>

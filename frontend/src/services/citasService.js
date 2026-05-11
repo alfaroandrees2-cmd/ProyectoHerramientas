@@ -60,6 +60,10 @@ export const crearCita = async (datoCita) => {
     throw new Error('slotId y motivo son requeridos');
   }
 
+  if (typeof datoCita.motivo !== 'string' || datoCita.motivo.trim().length === 0) {
+    throw new Error('El motivo no puede estar vacío');
+  }
+
   const endpoint = `${BASE_URL}/citas`;
 
   const response = await fetch(endpoint, {
@@ -70,13 +74,34 @@ export const crearCita = async (datoCita) => {
     },
     body: JSON.stringify({
       slotId: datoCita.slotId,
-      motivo: datoCita.motivo
+      motivo: datoCita.motivo.trim()
     })
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `Error ${response.status}: No se pudo crear la cita`);
+    let errorMessage = `Error ${response.status}`;
+    
+    try {
+      const errorData = await response.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      } else if (errorData.error) {
+        errorMessage = errorData.error;
+      }
+    } catch (e) {
+      // Si no es JSON, usar mensaje por defecto
+      if (response.status === 409) {
+        errorMessage = 'El horario ya no está disponible. Fue reservado por otro usuario.';
+      } else if (response.status === 401) {
+        errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
+      } else if (response.status === 403) {
+        errorMessage = 'No tienes permisos para reservar citas.';
+      } else {
+        errorMessage = 'No se pudo crear la cita. Intenta nuevamente.';
+      }
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return await response.json();

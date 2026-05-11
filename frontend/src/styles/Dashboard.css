@@ -206,6 +206,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .doctor-card::before {
@@ -221,13 +222,18 @@
 }
 
 .doctor-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 48px rgba(42, 125, 225, 0.15);
-  border-color: rgba(42, 125, 225, 0.25);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 56px rgba(42, 125, 225, 0.2);
+  border-color: rgba(42, 125, 225, 0.35);
 }
 
 .doctor-card:hover::before {
   opacity: 1;
+}
+
+.doctor-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .doctor-card-top {

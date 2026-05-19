@@ -210,3 +210,18 @@ INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id)
 SELECT d.id, e.id FROM Doctor d, Especialidad e 
 WHERE d.nombre='Luis' AND d.apellido='Fernández' AND e.nombre='Neurología'
 ON DUPLICATE KEY UPDATE doctor_id=doctor_id;
+
+-- 1. Importar bdactualizada.sql
+-- 2. Ejecutar 01_align_skipline_schema.sql
+
+-- 3. CREAR ADMIN (en SQL o vía API con token previo)
+INSERT INTO Usuario (nombre, email, password, rol) 
+VALUES ('Admin', 'admin@skipline.local', '$2a$10$...', 'ADMIN');
+
+-- 4. GENERAR SLOTS (POST a /api/slots/generar con token ADMIN)
+{
+  "doctorId": 1,
+  "fechaInicio": "2026-05-20",
+  "fechaFin": "2026-06-30",
+  "duracionMinutos": 30
+}

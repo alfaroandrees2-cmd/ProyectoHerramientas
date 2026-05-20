@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { doctorService } from '../services/doctorService';
+import AppointmentModal from './AppointmentModal';
 import logoSkipline from '../assets/images/logo.png';
 import '../styles/Dashboard.css';
 
@@ -9,6 +10,8 @@ const Dashboard = (props) => {
   const [especialidad, setEspecialidad] = useState('Todas');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   useEffect(() => {
     loadDoctores();
@@ -50,6 +53,22 @@ const Dashboard = (props) => {
     }
 
     return `Proxima cita: ${doctor.proximaFechaDisponible} ${doctor.proximaHoraDisponible.slice(0, 5)}`;
+  };
+
+  const handleOpenModal = (doctor) => {
+    setSelectedDoctor({
+      id: doctor.id,
+      name: doctor.nombre,
+      specialty: doctor.especialidad,
+      office: `Consultorio ${doctor.consultorio || 'N/A'}`,
+      image: 'https://via.placeholder.com/80',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedDoctor(null);
   };
 
   return (
@@ -117,7 +136,18 @@ const Dashboard = (props) => {
         )}
 
         {doctores.map((doctor) => (
-          <article key={doctor.id} className="doctor-card">
+          <article
+            key={doctor.id}
+            className="doctor-card"
+            onClick={() => handleOpenModal(doctor)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleOpenModal(doctor);
+              }
+            }}
+          >
             <div className="doctor-card-top">
               <div>
                 <h2>{doctor.nombre}</h2>
@@ -144,6 +174,13 @@ const Dashboard = (props) => {
           Solo se muestra informacion de doctores desde base de datos. Citas y horarios todavia no se gestionan desde esta vista.
         </p>
       </section>
+
+      {/* Modal de Citas */}
+      <AppointmentModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        doctor={selectedDoctor}
+      />
     </main>
   );
 };

@@ -225,3 +225,15 @@ VALUES ('Admin', 'admin@skipline.local', '$2a$10$...', 'ADMIN');
   "fechaFin": "2026-06-30",
   "duracionMinutos": 30
 }
+
+
+POST http://localhost:8080/api/slots/generar
+Content-Type: application/json
+Authorization: Bearer {TU_TOKEN_ADMIN}
+--crear cuenta admin y poner token en header para probar esta funcionalidad
+{
+  "doctorId": 1,
+  "fechaInicio": "2026-05-12",
+  "fechaFin": "2026-05-30",
+  "duracionMinutos": 30
+}

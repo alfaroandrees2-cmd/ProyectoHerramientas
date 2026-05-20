@@ -292,14 +292,3 @@ INSERT INTO horario_base (doctor_id, dia_semana, hora_inicio, hora_fin) VALUES
 (2, 2, '14:00:00', '19:00:00'),  -- Martes
 (2, 4, '14:00:00', '19:00:00');  -- Jueves
 
-
-POST http://localhost:8080/api/slots/generar
-Content-Type: application/json
-Authorization: Bearer {TU_TOKEN_ADMIN}
---crear cuenta admin y poner token en header para probar esta funcionalidad
-{
-  "doctorId": 1,
-  "fechaInicio": "2026-05-12",
-  "fechaFin": "2026-05-30",
-  "duracionMinutos": 30
-}

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { doctorService } from '../services/doctorService';
 import AppointmentModal from './AppointmentModal';
+import HistorialCitas from './HistorialCitas';
 import Sidebar from './Sidebar';
 import logoSkipline from '../assets/images/logo.png';
 import '../styles/Dashboard.css';
@@ -188,7 +189,7 @@ const Dashboard = (props) => {
           <section className="content-section">
             <h2>Historial de Citas</h2>
             <div className="history-card">
-              <p className="placeholder-text">Tu historial de citas aparecerá aquí</p>
+              <HistorialCitas />
             </div>
           </section>
         );

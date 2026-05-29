@@ -112,3 +112,27 @@ export default {
   obtenerDoctores,
   crearCita
 };
+
+export const obtenerHistorial = async ({ search, estado } = {}) => {
+  const endpoint = `${BASE_URL}/citas/historial`;
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (estado) params.append('estado', estado);
+
+  const url = params.toString() ? `${endpoint}?${params.toString()}` : endpoint;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+    }
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || `Error ${response.status}: no se pudo cargar el historial`);
+  }
+
+  return await response.json();
+};

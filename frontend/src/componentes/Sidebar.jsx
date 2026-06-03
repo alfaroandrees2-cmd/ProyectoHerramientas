@@ -1,4 +1,15 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUser,
+  faClipboardList,
+  faHospital,
+  faUserDoctor,
+  faCircleQuestion,
+  faRightFromBracket,
+  faChevronLeft,
+  faChevronRight
+} from '@fortawesome/pro-solid-svg-icons';
 import '../styles/Sidebar.css';
 
 const Sidebar = ({ onLogout, onNavigate }) => {
@@ -22,27 +33,27 @@ const Sidebar = ({ onLogout, onNavigate }) => {
     {
       id: 'perfil',
       label: 'Mi Perfil',
-      icon: '👤'
+      icon: faUser
     },
     {
       id: 'historial',
       label: 'Historial de Citas',
-      icon: '📋'
+      icon: faClipboardList
     },
     {
       id: 'especialidades',
       label: 'Especialidades',
-      icon: '🏥'
+      icon: faHospital
     },
     {
       id: 'medicos',
       label: 'Médicos en General',
-      icon: '👨‍⚕️'
+      icon: faUserDoctor
     },
     {
       id: 'ayuda',
       label: 'Centro de Ayuda',
-      icon: '❓'
+      icon: faCircleQuestion
     }
   ];
 
@@ -55,7 +66,7 @@ const Sidebar = ({ onLogout, onNavigate }) => {
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle sidebar"
         >
-          {isOpen ? '◀' : '▶'}
+          <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
         </button>
       </div>
 
@@ -67,7 +78,9 @@ const Sidebar = ({ onLogout, onNavigate }) => {
             onClick={() => handleOptionClick(option.id)}
             title={option.label}
           >
-            <span className="menu-icon">{option.icon}</span>
+            <span className="menu-icon">
+              <FontAwesomeIcon icon={option.icon} />
+            </span>
             <span className={`menu-label ${!isOpen && 'hidden'}`}>
               {option.label}
             </span>
@@ -81,7 +94,9 @@ const Sidebar = ({ onLogout, onNavigate }) => {
           onClick={handleLogout}
           title="Cerrar sesión"
         >
-          <span className="menu-icon">🚪</span>
+          <span className="menu-icon">
+            <FontAwesomeIcon icon={faRightFromBracket} />
+          </span>
           <span className={`menu-label ${!isOpen && 'hidden'}`}>
             Cerrar Sesión
           </span>

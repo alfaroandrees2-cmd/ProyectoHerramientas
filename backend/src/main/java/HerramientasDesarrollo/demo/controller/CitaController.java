@@ -1,5 +1,17 @@
 package HerramientasDesarrollo.demo.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import HerramientasDesarrollo.demo.dto.cita.CitaHistoryResponse;
 import HerramientasDesarrollo.demo.dto.cita.CitaResponse;
 import HerramientasDesarrollo.demo.dto.cita.CreateCitaRequest;
 import HerramientasDesarrollo.demo.service.CitaService;
@@ -9,14 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/citas")
@@ -48,5 +52,23 @@ public class CitaController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(citaService.createCita(request, authentication));
+    }
+
+    @Operation(summary = "Historial de citas", description = "Obtiene el historial de citas según rol (PACIENTE: solo las suyas, MEDICO: sus citas, ADMIN: todas). MEDICO puede pasar doctorId como query param si corresponde.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listado de citas"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Sin permisos")
+    })
+    @PreAuthorize("isAuthenticated()")
+    @org.springframework.web.bind.annotation.GetMapping("/historial")
+    public ResponseEntity<List<CitaHistoryResponse>> getHistorial(
+            Authentication authentication,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Long doctorId,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String estado
+    ) {
+        List<CitaHistoryResponse> result = citaService.getHistorial(authentication, doctorId, search, estado);
+        return ResponseEntity.ok(result);
     }
 }

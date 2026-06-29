@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { doctorService } from '../services/doctorService';
+import AppointmentModal from './AppointmentModal';
+import HistorialCitas from './HistorialCitas';
+import Sidebar from './Sidebar';
 import logoSkipline from '../assets/images/logo.png';
 import '../styles/Dashboard.css';
 
@@ -9,6 +12,9 @@ const Dashboard = (props) => {
   const [especialidad, setEspecialidad] = useState('Todas');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [currentView, setCurrentView] = useState('medicos');
 
   useEffect(() => {
     loadDoctores();
@@ -52,20 +58,28 @@ const Dashboard = (props) => {
     return `Proxima cita: ${doctor.proximaFechaDisponible} ${doctor.proximaHoraDisponible.slice(0, 5)}`;
   };
 
-  return (
-    <main className="dashboard-page">
-      <header className="topbar">
-        <div className="brand">
-          <img src={logoSkipline} alt="Skipline Logo" className="brand-logo" />
-          <div className="brand-text">
-            <p>Sistema de Gestion de Citas Médicas</p>
-          </div>
-        </div>
-        <button className="logout-btn" type="button" onClick={props.onLogout}>
-          Cerrar Sesion
-        </button>
-      </header>
+  const handleOpenModal = (doctor) => {
+    setSelectedDoctor({
+      id: doctor.id,
+      name: doctor.nombre,
+      specialty: doctor.especialidad,
+      office: `Consultorio ${doctor.consultorio || 'N/A'}`,
+      image: 'https://via.placeholder.com/80',
+    });
+    setIsModalOpen(true);
+  };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedDoctor(null);
+  };
+
+  const handleNavigate = (view) => {
+    setCurrentView(view);
+  };
+
+  const renderMedicosView = () => (
+    <>
       <section className="stats-grid">
         <article className="stat-card">
           <p className="stat-label">Doctores Disponibles</p>
@@ -117,7 +131,18 @@ const Dashboard = (props) => {
         )}
 
         {doctores.map((doctor) => (
-          <article key={doctor.id} className="doctor-card">
+          <article
+            key={doctor.id}
+            className="doctor-card"
+            onClick={() => handleOpenModal(doctor)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleOpenModal(doctor);
+              }
+            }}
+          >
             <div className="doctor-card-top">
               <div>
                 <h2>{doctor.nombre}</h2>
@@ -144,7 +169,80 @@ const Dashboard = (props) => {
           Solo se muestra informacion de doctores desde base de datos. Citas y horarios todavia no se gestionan desde esta vista.
         </p>
       </section>
-    </main>
+    </>
+  );
+
+  const renderContent = () => {
+    switch (currentView) {
+      case 'perfil':
+        return (
+          <section className="content-section">
+            <h2>Mi Perfil</h2>
+            <div className="profile-card">
+              <p className="placeholder-text">Tu información de perfil aparecerá aquí</p>
+            </div>
+          </section>
+        );
+
+      case 'historial':
+        return (
+          <section className="content-section">
+            <h2>Historial de Citas</h2>
+            <div className="history-card">
+              <HistorialCitas />
+            </div>
+          </section>
+        );
+
+      case 'especialidades':
+        return (
+          <section className="content-section">
+            <h2>Especialidades</h2>
+            <div className="specialties-card">
+              <p className="placeholder-text">Catálogo de especialidades disponibles</p>
+            </div>
+          </section>
+        );
+
+      case 'ayuda':
+        return (
+          <section className="content-section">
+            <h2>Centro de Ayuda</h2>
+            <div className="help-card">
+              <p className="placeholder-text">Centro de ayuda y soporte técnico</p>
+            </div>
+          </section>
+        );
+
+      case 'medicos':
+      default:
+        return renderMedicosView();
+    }
+  };
+
+  return (
+    <div className="dashboard-container">
+      <Sidebar onLogout={props.onLogout} onNavigate={handleNavigate} />
+      <main className="dashboard-page">
+        <header className="topbar">
+          <div className="brand">
+            <img src={logoSkipline} alt="Skipline Logo" className="brand-logo" />
+            <div className="brand-text">
+              <p>Sistema de Gestion de Citas Médicas</p>
+            </div>
+          </div>
+        </header>
+
+        {renderContent()}
+
+        {/* Modal de Citas */}
+        <AppointmentModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          doctor={selectedDoctor}
+        />
+      </main>
+    </div>
   );
 };
 

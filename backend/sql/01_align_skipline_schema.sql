@@ -1,212 +1,184 @@
--- Ajuste de esquema existente para alinear con backend Spring Boot
--- Ejecutar en MySQL sobre la BD skipline
+-- ====================================================================
+-- BASE DE DATOS: skipline
+-- Propósito: Inicializar esquema de base de datos e insertar datos de prueba
+-- ====================================================================
 
+DROP DATABASE IF EXISTS skipline;
+CREATE DATABASE skipline;
 USE skipline;
 
--- 1) Normalizar datos para poder aplicar restricciones sin errores
-UPDATE Usuario
-SET rol = 'PACIENTE'
-WHERE rol IS NULL OR rol NOT IN ('ADMIN', 'MEDICO', 'PACIENTE');
+-- ====================================================================
+-- 1. TABLAS PRINCIPALES (Sujetos y Entidades Base)
+-- ====================================================================
 
-UPDATE Usuario
-SET nombre = 'Sin nombre'
-WHERE nombre IS NULL OR TRIM(nombre) = '';
-
-UPDATE Usuario
-SET email = CONCAT('sin-email-', id, '@skipline.local')
-WHERE email IS NULL OR TRIM(email) = '';
-
-UPDATE Usuario
-SET password = '$2a$10$7EqJtq98hPqEX7fNZaFWoOHiq9B8f5Vf3L7hIwrKyYVJZZzKzbwQm'
-WHERE password IS NULL OR TRIM(password) = '';
-
--- 2) Alinear estructura de Usuario con la entidad JPA
-ALTER TABLE Usuario
-    MODIFY nombre VARCHAR(120) NOT NULL,
-    MODIFY email VARCHAR(150) NOT NULL,
-    MODIFY password VARCHAR(255) NOT NULL,
-    MODIFY rol VARCHAR(20) NOT NULL DEFAULT 'PACIENTE',
-    MODIFY created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
--- 3) Endurecer tablas del dominio para integridad de datos
-ALTER TABLE Clinica
-    MODIFY nombre VARCHAR(150) NOT NULL,
-    MODIFY direccion VARCHAR(255) NOT NULL;
-
-ALTER TABLE Doctor
-    MODIFY nombre VARCHAR(100) NOT NULL,
-    MODIFY apellido VARCHAR(100) NOT NULL,
-    MODIFY clinica_id BIGINT NOT NULL;
-
-ALTER TABLE Especialidad
-    MODIFY nombre VARCHAR(100) NOT NULL;
-
-ALTER TABLE HorarioBase
-    MODIFY doctor_id BIGINT NOT NULL,
-    MODIFY dia_semana INT NOT NULL,
-    MODIFY hora_inicio TIME NOT NULL,
-    MODIFY hora_fin TIME NOT NULL;
-
-ALTER TABLE Slot
-    MODIFY doctor_id BIGINT NOT NULL,
-    MODIFY fecha DATE NOT NULL,
-    MODIFY hora_inicio TIME NOT NULL,
-    MODIFY hora_fin TIME NOT NULL,
-    MODIFY estado VARCHAR(20) NOT NULL DEFAULT 'DISPONIBLE';
-
-ALTER TABLE Cita
-    MODIFY usuario_id BIGINT NOT NULL,
-    MODIFY slot_id BIGINT NOT NULL,
-    MODIFY estado VARCHAR(20) NOT NULL DEFAULT 'RESERVADA';
-
--- 4) Checks de valores válidos (MySQL 8+)
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = DATABASE()
-      AND constraint_name = 'chk_usuario_rol'
-      AND table_name = 'Usuario'
+-- CLINICA: Almacena la información de las sedes o centros médicos.
+CREATE TABLE clinica (
+  id bigint NOT NULL AUTO_INCREMENT,
+  nombre varchar(150) NOT NULL,
+  direccion varchar(255) NOT NULL,
+  PRIMARY KEY (id)
 );
-SET @sql := IF(@exists = 0,
-    'ALTER TABLE Usuario ADD CONSTRAINT chk_usuario_rol CHECK (rol IN (''ADMIN'', ''MEDICO'', ''PACIENTE''))',
-    'SELECT ''chk_usuario_rol ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = DATABASE()
-      AND constraint_name = 'chk_slot_estado'
-      AND table_name = 'Slot'
+-- ESPECIALIDAD: Almacena las especialidades médicas ofrecidas.
+CREATE TABLE especialidad (
+  id bigint NOT NULL AUTO_INCREMENT,
+  nombre varchar(100) NOT NULL,
+  descripcion varchar(255),
+  PRIMARY KEY (id)
 );
-SET @sql := IF(@exists = 0,
-    'ALTER TABLE Slot ADD CONSTRAINT chk_slot_estado CHECK (estado IN (''DISPONIBLE'', ''OCUPADO'', ''RESERVADO'', ''CANCELADO''))',
-    'SELECT ''chk_slot_estado ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = DATABASE()
-      AND constraint_name = 'chk_cita_estado'
-      AND table_name = 'Cita'
+-- USUARIO: Cuentas de acceso para Pacientes, Médicos y Administradores.
+CREATE TABLE usuario (
+  id bigint NOT NULL AUTO_INCREMENT,
+  nombre varchar(120) NOT NULL,
+  email varchar(150) NOT NULL,
+  password varchar(255) NOT NULL,
+  rol varchar(20) NOT NULL DEFAULT 'PACIENTE',
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY email (email)
 );
-SET @sql := IF(@exists = 0,
-    'ALTER TABLE Cita ADD CONSTRAINT chk_cita_estado CHECK (estado IN (''RESERVADA'', ''CONFIRMADA'', ''ATENDIDA'', ''CANCELADA''))',
-    'SELECT ''chk_cita_estado ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = DATABASE()
-      AND constraint_name = 'chk_horario_dia_semana'
-      AND table_name = 'HorarioBase'
+-- ====================================================================
+-- 2. TABLAS RELACIONADAS A DOCTORES
+-- ====================================================================
+
+-- DOCTOR: Perfiles médicos asociados a una clínica.
+CREATE TABLE doctor (
+  id bigint NOT NULL AUTO_INCREMENT,
+  nombre varchar(100) NOT NULL,
+  apellido varchar(100) NOT NULL,
+  experiencia_anios int,
+  consultorio varchar(50),
+  foto_url varchar(255),
+  clinica_id bigint NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (clinica_id) REFERENCES clinica(id)
 );
-SET @sql := IF(@exists = 0,
-    'ALTER TABLE HorarioBase ADD CONSTRAINT chk_horario_dia_semana CHECK (dia_semana BETWEEN 1 AND 7)',
-    'SELECT ''chk_horario_dia_semana ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = DATABASE()
-      AND constraint_name = 'chk_horario_horas'
-      AND table_name = 'HorarioBase'
+-- DOCTOR_ESPECIALIDAD: Relación muchos-a-muchos entre doctores y especialidades.
+CREATE TABLE doctor_especialidad (
+  doctor_id bigint NOT NULL,
+  especialidad_id bigint NOT NULL,
+  PRIMARY KEY (doctor_id, especialidad_id),
+  FOREIGN KEY (doctor_id) REFERENCES doctor(id),
+  FOREIGN KEY (especialidad_id) REFERENCES especialidad(id)
 );
-SET @sql := IF(@exists = 0,
-    'ALTER TABLE HorarioBase ADD CONSTRAINT chk_horario_horas CHECK (hora_inicio < hora_fin)',
-    'SELECT ''chk_horario_horas ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = DATABASE()
-      AND constraint_name = 'chk_slot_horas'
-      AND table_name = 'Slot'
+-- HORARIO_BASE: Bloques de atención semanal teóricos para cada doctor.
+CREATE TABLE horario_base (
+  id bigint NOT NULL AUTO_INCREMENT,
+  doctor_id bigint NOT NULL,
+  dia_semana int NOT NULL,
+  hora_inicio time NOT NULL,
+  hora_fin time NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (doctor_id) REFERENCES doctor(id)
 );
-SET @sql := IF(@exists = 0,
-    'ALTER TABLE Slot ADD CONSTRAINT chk_slot_horas CHECK (hora_inicio < hora_fin)',
-    'SELECT ''chk_slot_horas ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
--- 5) Índices recomendados para consultas comunes
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.statistics
-    WHERE table_schema = DATABASE()
-      AND table_name = 'Usuario'
-      AND index_name = 'idx_usuario_email'
+-- ====================================================================
+-- 3. GESTIÓN DE CITAS Y DISPONIBILIDAD (SLOTS)
+-- ====================================================================
+
+-- SLOT: Bloques de tiempo reales generados para citas médicas.
+CREATE TABLE slot (
+  id bigint NOT NULL AUTO_INCREMENT,
+  doctor_id bigint NOT NULL,
+  fecha date NOT NULL,
+  hora_inicio time NOT NULL,
+  hora_fin time NOT NULL,
+  estado varchar(20) NOT NULL DEFAULT 'DISPONIBLE',
+  PRIMARY KEY (id),
+  FOREIGN KEY (doctor_id) REFERENCES doctor(id)
 );
-SET @sql := IF(@exists = 0,
-    'CREATE INDEX idx_usuario_email ON Usuario(email)',
-    'SELECT ''idx_usuario_email ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.statistics
-    WHERE table_schema = DATABASE()
-      AND table_name = 'Cita'
-      AND index_name = 'idx_cita_usuario'
+-- CITA: Reservas de citas médicas realizadas por los usuarios en slots específicos.
+CREATE TABLE cita (
+  id bigint NOT NULL AUTO_INCREMENT,
+  usuario_id bigint NOT NULL,
+  slot_id bigint NOT NULL,
+  estado varchar(20) NOT NULL DEFAULT 'RESERVADA',
+  motivo varchar(255),
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_cita_slot (slot_id),
+  FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+  FOREIGN KEY (slot_id) REFERENCES slot(id)
 );
-SET @sql := IF(@exists = 0,
-    'CREATE INDEX idx_cita_usuario ON Cita(usuario_id)',
-    'SELECT ''idx_cita_usuario ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.statistics
-    WHERE table_schema = DATABASE()
-      AND table_name = 'Cita'
-      AND index_name = 'idx_cita_estado'
-);
-SET @sql := IF(@exists = 0,
-    'CREATE INDEX idx_cita_estado ON Cita(estado)',
-    'SELECT ''idx_cita_estado ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+-- ====================================================================
+-- 4. INSERCIÓN DE DATOS DE PRUEBA (SEED DATA)
+-- ====================================================================
 
-SET @exists := (
-    SELECT COUNT(*)
-    FROM information_schema.statistics
-    WHERE table_schema = DATABASE()
-      AND table_name = 'Slot'
-      AND index_name = 'idx_slot_estado_fecha'
-);
-SET @sql := IF(@exists = 0,
-    'CREATE INDEX idx_slot_estado_fecha ON Slot(estado, fecha)',
-    'SELECT ''idx_slot_estado_fecha ya existe''');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+-- Clínica SkipLine
+INSERT INTO clinica (id, nombre, direccion) VALUES 
+(1, 'Clinica SkipLine', 'Av. Principal 123');
 
--- 6) Renombrar tablas para consistencia con JPA
-RENAME TABLE DoctorEspecialidad TO doctor_especialidad;
-RENAME TABLE HorarioBase TO horario_base;
+-- Especialidades
+INSERT INTO especialidad (id, nombre, descripcion) VALUES
+(1, 'Cardiología', 'Corazón y sistema cardiovascular'),
+(2, 'Pediatría', 'Atención de niños'),
+(3, 'Dermatología', 'Piel y enfermedades cutáneas'),
+(4, 'Medicina General', 'Atención primaria general');
 
---Datos ficticios para la tabla Doctor
-INSERT INTO Doctor (nombre, apellido, experiencia_anios, consultorio, foto_url, clinica_id) VALUES
-('Carlos', 'Rodríguez', 15, '301', 'https://via.placeholder.com/150?text=Carlos', 1),
-('Ana', 'Martínez', 12, '205', 'https://via.placeholder.com/150?text=Ana', 1),
-('Luis', 'Fernández', 20, '402', 'https://via.placeholder.com/150?text=Luis', 1)
-;
+-- Doctores
+INSERT INTO doctor (id, nombre, apellido, experiencia_anios, consultorio, foto_url, clinica_id) VALUES
+(1, 'Carlos', 'Rodríguez', 15, '301', NULL, 1),
+(2, 'Ana', 'Martínez', 12, '205', NULL, 1),
+(3, 'Luis', 'Fernández', 20, '402', NULL, 1);
 
---Datos ficticios para la tabla Especialidad
--- Dr. Carlos Rodríguez -> Cardiología
-INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id) 
-SELECT d.id, e.id FROM Doctor d, Especialidad e 
-WHERE d.nombre='Carlos' AND d.apellido='Rodríguez' AND e.nombre='Cardiología'
-ON DUPLICATE KEY UPDATE doctor_id=doctor_id;
+-- Relación Doctor - Especialidad
+INSERT INTO doctor_especialidad (doctor_id, especialidad_id) VALUES
+(1, 1), -- Dr. Carlos Rodríguez -> Cardiología
+(2, 2), -- Dra. Ana Martínez -> Pediatría
+(3, 3); -- Dr. Luis Fernández -> Dermatología
 
--- Dra. Ana Martínez -> Pediatría
-INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id) 
-SELECT d.id, e.id FROM Doctor d, Especialidad e 
-WHERE d.nombre='Ana' AND d.apellido='Martínez' AND e.nombre='Pediatría'
-ON DUPLICATE KEY UPDATE doctor_id=doctor_id;
+-- Usuario de prueba (Paciente)
+INSERT INTO usuario (id, nombre, email, password, rol, created_at) VALUES
+(1, 'Johan Dioses', 'johandiosesrazuri@gmail.com', 'password', 'PACIENTE', NOW());
 
--- Dr. Luis Fernández -> Neurología
-INSERT INTO Doctor_Especialidad (doctor_id, especialidad_id) 
-SELECT d.id, e.id FROM Doctor d, Especialidad e 
-WHERE d.nombre='Luis' AND d.apellido='Fernández' AND e.nombre='Neurología'
-ON DUPLICATE KEY UPDATE doctor_id=doctor_id;
+-- Horarios Base de Atención
+INSERT INTO horario_base (doctor_id, dia_semana, hora_inicio, hora_fin) VALUES
+-- Dr. Carlos Rodríguez (Lunes a Viernes, 9:00 AM - 5:00 PM)
+(1, 1, '09:00:00', '17:00:00'),
+(1, 2, '09:00:00', '17:00:00'),
+(1, 3, '09:00:00', '17:00:00'),
+(1, 4, '09:00:00', '17:00:00'),
+(1, 5, '09:00:00', '17:00:00'),
+
+-- Dra. Ana Martínez (Lunes, Miércoles y Viernes, 10:00 AM - 6:00 PM)
+(2, 1, '10:00:00', '18:00:00'),
+(2, 3, '10:00:00', '18:00:00'),
+(2, 5, '10:00:00', '18:00:00'),
+
+-- Dr. Luis Fernández (Martes y Jueves, 2:00 PM - 7:00 PM)
+(3, 2, '14:00:00', '19:00:00'),
+(3, 4, '14:00:00', '19:00:00');
+
+-- Slots de atención disponibles
+INSERT INTO slot (id, doctor_id, fecha, hora_inicio, hora_fin, estado) VALUES
+-- Dr. Carlos Rodríguez
+(1, 1, '2026-06-03', '09:00:00', '09:30:00', 'DISPONIBLE'),
+(2, 1, '2026-06-03', '09:30:00', '10:00:00', 'DISPONIBLE'),
+(3, 1, '2026-06-03', '10:00:00', '10:30:00', 'DISPONIBLE'),
+
+-- Dra. Ana Martínez
+(4, 2, '2026-06-03', '10:00:00', '10:30:00', 'DISPONIBLE'),
+(5, 2, '2026-06-03', '10:30:00', '11:00:00', 'DISPONIBLE'),
+
+-- Dr. Luis Fernández
+(6, 3, '2026-06-04', '14:00:00', '14:30:00', 'DISPONIBLE'),
+(7, 3, '2026-06-04', '14:30:00', '15:00:00', 'DISPONIBLE');
+
+-- Cita reservada
+INSERT INTO cita (usuario_id, slot_id, estado, motivo) VALUES 
+(1, 1, 'RESERVADA', 'Dolor de cabeza frecuente');
+
+-- ====================================================================
+-- 5. VERIFICACIÓN DE DATOS
+-- ====================================================================
+SHOW TABLES;
+SELECT * FROM clinica;
+SELECT * FROM especialidad;
+SELECT * FROM doctor;
+SELECT * FROM usuario;

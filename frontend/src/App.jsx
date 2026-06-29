@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Login from './componentes/Login'
 import Registro from './componentes/Registro'
 import Dashboard from './componentes/Dashboard'
 import './App.css'
@@ -49,5 +50,5 @@ function App() {
   )
 }
 
-import Login from './componentes/Login'
+
 export default App
